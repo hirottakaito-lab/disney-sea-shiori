@@ -1,0 +1,1746 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>DisneySea しおり mock v5</title>
+  <style>
+    :root {
+      --bg: #fbf6f0;
+      --panel: rgba(255, 255, 255, 0.96);
+      --panel-strong: rgba(255, 255, 255, 0.99);
+      --line: #e5d6c8;
+      --text: #5a4637;
+      --sub: #8d7664;
+      --accent: #b98b66;
+      --accent-deep: #8f6c52;
+      --accent-soft: #f2e7db;
+      --accent-soft-2: #f8efe7;
+      --radius: 22px;
+      --safe-top: max(env(safe-area-inset-top), 14px);
+      --safe-bottom: max(env(safe-area-inset-bottom), 14px);
+      --font-scale: 1;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      background: linear-gradient(180deg, #fffdf9 0%, #f9f2ea 54%, #f4ece4 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+      font-size: calc(16px * var(--font-scale));
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 12% 10%, rgba(185, 139, 102, 0.08), transparent 26%),
+        radial-gradient(circle at 82% 16%, rgba(185, 139, 102, 0.06), transparent 24%),
+        radial-gradient(circle at 50% 100%, rgba(185, 139, 102, 0.06), transparent 30%);
+    }
+
+    .app {
+      position: relative;
+      width: 100%;
+      min-height: 100dvh;
+      isolation: isolate;
+      overflow: hidden;
+      background: #fcf7f2;
+    }
+
+    .phone-frame {
+      position: relative;
+      width: 100%;
+      min-height: 100dvh;
+      overflow: hidden;
+      background: #fcf7f2;
+      isolation: isolate;
+    }
+
+    .phone-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.9), rgba(247,240,232,0.94)),
+        radial-gradient(circle at 20% 12%, rgba(185,139,102,0.10), transparent 18%),
+        radial-gradient(circle at 78% 20%, rgba(185,139,102,0.08), transparent 18%),
+        radial-gradient(circle at 50% 100%, rgba(185,139,102,0.08), transparent 28%);
+    }
+
+    .phone-bg::before,
+    .phone-bg::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      background: rgba(185, 139, 102, 0.08);
+      filter: blur(0.2px);
+    }
+
+    .phone-bg::before {
+      width: 180px;
+      height: 180px;
+      top: -42px;
+      right: -24px;
+    }
+
+    .phone-bg::after {
+      width: 220px;
+      height: 220px;
+      left: -56px;
+      bottom: -82px;
+    }
+
+    .screen {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      display: none;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      touch-action: pan-y manipulation;
+    }
+
+    .screen::-webkit-scrollbar { display: none; }
+    .screen.active { display: block; }
+
+    .screen-inner {
+      min-height: 100%;
+      padding: var(--safe-top) 16px calc(var(--safe-bottom) + 12px);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: transparent;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    h1 {
+      font-size: 2rem;
+      line-height: 1.18;
+      letter-spacing: 0.02em;
+    }
+
+    h3 {
+      font-size: 1.02rem;
+      line-height: 1.45;
+      margin-bottom: 8px;
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .subtitle, .section-sub, small, .content p, .bullet-list li {
+      color: var(--sub);
+      line-height: 1.8;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 2px;
+    }
+
+    .title-hero {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 18px;
+      text-align: center;
+      padding: 12px 4px 0;
+    }
+
+    .title-mark {
+      width: 96px;
+      height: 96px;
+      margin: 0 auto;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(180deg, var(--accent-soft-2), var(--accent-soft));
+      border: 1px solid #ecd0cb;
+      color: var(--accent);
+      font-size: 1.9rem;
+    }
+
+    .stack,
+    .item-list,
+    .chips,
+    .content,
+    .grid-list,
+    .bullet-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    button {
+      appearance: none;
+      -webkit-appearance: none;
+      border: none;
+      background: none;
+      color: var(--text);
+      font: inherit;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .back-btn,
+    .mini-btn,
+    .primary-btn,
+    .secondary-btn,
+    .list-btn,
+    .chip-btn {
+      border-radius: 18px;
+      border: 1px solid var(--line);
+    }
+
+    .back-btn,
+    .mini-btn {
+      min-height: 40px;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.9);
+    }
+
+    .primary-btn,
+    .secondary-btn,
+    .list-btn {
+      width: 100%;
+      min-height: 56px;
+      padding: 16px 18px;
+      text-align: left;
+      background: var(--panel-strong);
+    }
+
+    .primary-btn {
+      background: var(--accent);
+      color: #fffafa;
+      border-color: var(--accent);
+    }
+
+    .list-btn {
+      position: relative;
+      padding-right: 44px;
+    }
+
+    .list-btn::after {
+      content: "›";
+      position: absolute;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--accent);
+      font-size: 1.1rem;
+    }
+
+    .list-btn small {
+      display: block;
+      margin-top: 4px;
+      font-size: 0.84rem;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    .section-title {
+      font-size: 1.28rem;
+      margin-bottom: 8px;
+    }
+
+    .option-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 0;
+      border-top: 1px solid #ece0d5;
+    }
+
+    .option-row:first-of-type {
+      border-top: none;
+      padding-top: 0;
+    }
+
+    .option-label {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .chips {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .chip-btn {
+      min-height: 38px;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.92);
+    }
+
+    .chip-btn.selected {
+      background: var(--accent-soft);
+      border-color: #d8c1ab;
+      color: #7a5d47;
+    }
+
+    .credit-card {
+      display: grid;
+      gap: 10px;
+    }
+
+    .credit-item,
+    .mini-card {
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(255, 250, 245, 0.94);
+      border: 1px solid var(--line);
+    }
+
+    .kicker {
+      color: var(--accent-deep);
+      font-size: 0.76rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .bullet-list {
+      margin: 0;
+      padding-left: 1.15em;
+      gap: 6px;
+    }
+
+    .bullet-list li {
+      padding-left: 2px;
+    }
+
+    .grid-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+
+
+
+
+
+    .special-stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .special-card {
+      padding: 14px;
+      border-radius: 16px;
+      background: var(--panel-strong);
+      border: 1px solid var(--line);
+      display: grid;
+      gap: 8px;
+    }
+
+    .special-card.special-soft {
+      background: linear-gradient(180deg, rgba(255,255,255,0.99), rgba(247,241,235,0.92));
+      border-color: #ddcdbd;
+    }
+
+    .special-arrow {
+      color: var(--accent-deep);
+      line-height: 1.8;
+      font-size: 0.94rem;
+    }
+
+    .special-note {
+      color: var(--sub);
+      line-height: 1.8;
+      font-size: 0.95rem;
+    }
+
+    .quote-panel {
+      padding: 16px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(247,241,235,0.95));
+      border: 1px solid var(--line);
+      display: grid;
+      gap: 8px;
+    }
+
+    .quote-mark {
+      color: var(--accent);
+      font-size: 1.35rem;
+      line-height: 1;
+    }
+
+    .spot-line {
+      display: grid;
+      gap: 8px;
+    }
+
+    .spot-card {
+      padding: 14px;
+      border-radius: 16px;
+      background: var(--panel-strong);
+      border: 1px solid var(--line);
+      display: grid;
+      gap: 6px;
+    }
+
+    .spot-title {
+      font-size: 1.02rem;
+      line-height: 1.55;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.01em;
+    }
+
+    .spot-copy {
+      color: var(--sub);
+      line-height: 1.75;
+      font-size: 0.95rem;
+    }
+
+    .spot-reco {
+      color: var(--accent-deep);
+      line-height: 1.8;
+      font-size: 0.94rem;
+    }
+
+    .food-line {
+      display: grid;
+      gap: 8px;
+    }
+
+    
+    .food-card {
+      position: relative;
+    }
+    .food-card::before {
+      content: "";
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      top: 10px;
+      height: 2px;
+      background: linear-gradient(90deg, rgba(185,139,102,0.45), rgba(185,139,102,0.0));
+      border-radius: 2px;
+    }
+
+    .food-card {
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.97);
+      border: 1px solid var(--line);
+      display: grid;
+      gap: 6px;
+    }
+
+    .food-title {
+      font-size: 1.08rem;
+      line-height: 1.5;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.01em;
+    }
+
+    .food-popular {
+      color: var(--sub);
+      line-height: 1.75;
+      font-size: 0.95rem;
+    }
+
+    .food-reco {
+      color: var(--accent-deep);
+      line-height: 1.8;
+      font-size: 0.94rem;
+    }
+
+    .port-section {
+      display: grid;
+      gap: 10px;
+    }
+
+    .port-header {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-bottom: 2px;
+    }
+
+    .port-name {
+      font-size: 1.06rem;
+      line-height: 1.5;
+    }
+
+    .port-note {
+      color: var(--sub);
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+
+    .ride-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .ride-card {
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.97);
+      border: 1px solid var(--line);
+      display: grid;
+      gap: 6px;
+    }
+
+    .ride-meta {
+      color: var(--accent-deep);
+      font-size: 0.76rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      line-height: 1.6;
+    }
+
+    .ride-title {
+      font-size: 0.98rem;
+      line-height: 1.55;
+    }
+
+    .tt-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .tt-slot {
+      aspect-ratio: 1 / 1.08;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(244, 235, 226, 0.94));
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 12px;
+    }
+
+    .tt-num {
+      color: var(--accent);
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+    }
+
+    .tt-placeholder {
+      flex: 1;
+      display: grid;
+      place-items: center;
+      color: #b48784;
+      font-size: 0.88rem;
+      text-align: center;
+      line-height: 1.7;
+    }
+
+    .bottom-nav {
+      position: sticky;
+      bottom: 0;
+      margin-top: auto;
+      display: flex;
+      gap: 10px;
+      padding-top: 10px;
+      background: linear-gradient(180deg, rgba(255,245,243,0), rgba(255,245,243,0.95) 42%);
+    }
+
+    .bottom-nav .secondary-btn,
+    .bottom-nav .primary-btn {
+      min-height: 50px;
+      padding: 14px 16px;
+      text-align: center;
+    }
+
+    .footer-note {
+      text-align: center;
+      color: var(--sub);
+      font-size: 0.82rem;
+      padding-bottom: 4px;
+    }
+
+    @media (min-width: 560px) {
+      .screen-inner {
+        max-width: 640px;
+        margin: 0 auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="phone-frame">
+      <div class="phone-bg"></div>
+
+      <section class="screen active" id="screen-title">
+        <div class="screen-inner">
+          <div class="title-hero">
+            <div class="eyebrow">Tokyo DisneySea Planner</div>
+            <div class="title-mark">✦</div>
+            <h1>DisneySea<br>The Last Ride<br>– Table Tennis Club –<br>March 21, 2026</h1>
+            <p class="subtitle">
+              おしゃれなスマホ用しおりの叩き台です。<br>
+              タイトルから各項目までの流れと、全体の雰囲気を確認できます。
+            </p>
+            <div class="stack">
+              <button class="primary-btn" data-go="screen-menu">メニュー</button>
+              <button class="secondary-btn" data-go="screen-option">オプション</button>
+              <button class="secondary-btn" data-go="screen-credit">クレジット</button>
+            </div>
+          </div>
+          <p class="footer-note">白と赤を基調に、背景は固定・情報レイヤーだけがスクロールする構成です</p>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-menu">
+        <div class="screen-inner">
+          <div class="topbar">
+            <button class="back-btn" data-back>戻る</button>
+            <div class="eyebrow">Menu</div>
+            <button class="mini-btn" data-home>タイトル</button>
+          </div>
+          <div class="panel">
+            <h2 class="section-title">メニュー</h2>
+            <p class="section-sub">現時点の構成をそのまま並べた目次です。細かい命名や本文は後から差し替えできます。</p>
+          </div>
+          <div class="item-list" id="menu-list"></div>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-option">
+        <div class="screen-inner">
+          <div class="topbar">
+            <button class="back-btn" data-back>戻る</button>
+            <div class="eyebrow">Option</div>
+            <button class="mini-btn" data-home>タイトル</button>
+          </div>
+          <div class="panel">
+            <h2 class="section-title">オプション</h2>
+            <p class="section-sub">デザイン確認用として、文字サイズだけ切り替えられるようにしています。</p>
+            <div class="option-row">
+              <div class="option-label">
+                <div>文字サイズ</div>
+                <small class="section-sub">現地で見やすい大きさを試せます</small>
+              </div>
+              <div class="chips">
+                <button class="chip-btn" data-font="0.94">小</button>
+                <button class="chip-btn selected" data-font="1">標準</button>
+                <button class="chip-btn" data-font="1.08">大</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-credit">
+        <div class="screen-inner">
+          <div class="topbar">
+            <button class="back-btn" data-back>戻る</button>
+            <div class="eyebrow">Credit</div>
+            <button class="mini-btn" data-home>タイトル</button>
+          </div>
+          <div class="panel credit-card">
+            <div>
+              <h2 class="section-title">クレジット</h2>
+            </div>
+            <div class="credit-item">
+              <div>企画立案</div>
+              <small class="section-sub">堀口敏之</small>
+            </div>
+            <div class="credit-item">
+              <div>WEB制作</div>
+              <small class="section-sub">伊藤大貴</small>
+            </div>
+            <div class="credit-item">
+              <div>幹事</div>
+              <small class="section-sub">仁井康太</small>
+            </div>
+            <div class="credit-item">
+              <div>スペシャルサンクス</div>
+              <small class="section-sub">福田たち<br>星健司<br>畠山望<br>藤巻千秋</small>
+            </div>
+            <div class="credit-item">
+              <div>何もしてないやつ</div>
+              <small class="section-sub">たかぎそーへー</small>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-item">
+        <div class="screen-inner">
+          <div class="topbar">
+            <button class="back-btn" data-back>戻る</button>
+            <div class="eyebrow" id="item-eyebrow">Item</div>
+            <button class="mini-btn" data-go="screen-menu">メニュー</button>
+          </div>
+          <div class="panel">
+            <h2 class="section-title" id="item-title">項目</h2>
+            <p class="section-sub" id="item-subtitle">ここに各項目の本文を入れていきます。</p>
+          </div>
+          <div class="content" id="item-content"></div>
+          <div class="bottom-nav">
+            <button class="secondary-btn" id="prev-item">前の項目</button>
+            <button class="primary-btn" id="next-item">次の項目</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <template id="tpl-intro">
+    <div class="panel">
+      <div class="kicker">Introduction</div>
+      <p>海を越え、時代を越え、物語の中へ。<br>それが、東京ディズニーシー。</p>
+      <p>日本にいながら、まるで世界中を旅しているような体験ができるこの場所は、ただのテーマパークではありません。<br>“冒険とイマジネーションの海へ”というコンセプトの通り、一歩足を踏み入れた瞬間から、現実はゆっくりと遠ざかっていきます。</p>
+    </div>
+    <div class="panel">
+      <div class="kicker">Basic facts</div>
+      <h3>基本情報（まずはここをチェック）</h3>
+      <ul class="bullet-list">
+        <li>所在地：千葉県浦安市（東京駅から約15分）</li>
+        <li>開園：2001年</li>
+        <li>パークテーマ：海と冒険</li>
+        <li>エリア数：8つのテーマポート</li>
+        <li>隣接施設：東京ディズニーランド</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <div class="kicker">Theme ports</div>
+      <h3>世界観が段違い。8つの“海”を旅するパーク</h3>
+      <p>ディズニーシー最大の魅力は、エリアごとにまったく違う“世界”が広がっていること。</p>
+      <ul class="bullet-list">
+        <li>イタリアの港町を再現した「メディテレーニアンハーバー」</li>
+        <li>火山の内部に秘密基地がある「ミステリアスアイランド」</li>
+        <li>『アラジン』の世界が広がる「アラビアンコースト」</li>
+        <li>人魚たちの楽園「マーメイドラグーン」</li>
+      </ul>
+      <p>ただ歩くだけでも“物語の中を移動している感覚”になるのが、このパークの凄さです。</p>
+    </div>
+    <div class="panel">
+      <div class="kicker">Attraction mood</div>
+      <h3>アトラクションは「体験型」が主役</h3>
+      <p>絶叫系だけじゃない。ディズニーシーのアトラクションは“ストーリーを体験する”ことに重点が置かれています。</p>
+      <div class="grid-list">
+        <div class="mini-card">海底2万マイルの世界を探検するライド</div>
+        <div class="mini-card">火山内部の研究所を巡るミステリー体験</div>
+        <div class="mini-card">ゴンドラでゆったり水路を進むロマンチックな時間</div>
+        <div class="mini-card">「乗る」より「入り込む」に近い体験設計</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="kicker">Night</div>
+      <h3>夜が本番。大人のためのディズニー</h3>
+      <p>日が沈んだあと、この場所はさらに表情を変えます。</p>
+      <p>水面に映る光、静かに流れる音楽、そして壮大なショー。昼の賑やかさとは違い、どこか落ち着いた“大人の雰囲気”が漂います。</p>
+      <p>カップルや友人同士で訪れる人が多いのも納得です。</p>
+    </div>
+    <div class="panel">
+      <div class="kicker">Recommended for</div>
+      <h3>こんな人におすすめ</h3>
+      <ul class="bullet-list">
+        <li>非日常を味わいたい</li>
+        <li>世界観やストーリーに没入したい</li>
+        <li>写真・映像映えする場所が好き</li>
+        <li>ゆったり過ごすテーマパークがいい</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <div class="kicker">Summary</div>
+      <h3>まとめ</h3>
+      <p>東京ディズニーシーは、「遊園地」という言葉では収まりません。<br>それは、“旅”であり、“物語”であり、“体験”そのもの。</p>
+      <p>忙しい日常から少し離れて、海の向こうにある世界へ——</p>
+      <p>一度訪れれば、きっとまた戻りたくなる。そんな場所です。</p>
+    </div>
+  </template>
+
+  <script>
+    const itemOrder = [
+      {
+        key: 'intro',
+        label: 'はじめに',
+        menuNote: '導入と世界観の紹介',
+        eyebrow: 'Introduction',
+        subtitle: '導入文を反映した最初の叩き台です。',
+        render: () => document.getElementById('tpl-intro').innerHTML
+      },
+      {
+        key: 'basic',
+        label: '基本情報',
+        menuNote: '当日の動きと準備を整理',
+        eyebrow: 'Basic Info',
+        subtitle: '開園前の動きから持ち物まで、当日意識したいポイントをまとめたページです。',
+        render: () => `
+          <div class="panel">
+            <div class="kicker">Start</div>
+            <h3>① まずは“開園前”が勝負</h3>
+            <p>ディズニーシーを最大限楽しむなら、スタートがすべて。</p>
+            <ul class="bullet-list">
+              <li>理想：開園30〜60分前に到着</li>
+              <li>目的：人気アトラクションの待ち時間を回避</li>
+            </ul>
+            <p>開園直後は、まだパーク全体が空いている“ゴールデンタイム”。ここでどこに向かうかが、その日の満足度を左右します。</p>
+          </div>
+          <div class="panel">
+            <div class="kicker">Official app</div>
+            <h3>② 公式アプリは“必須装備”</h3>
+            <p>今のディズニーは「スマホ前提」で設計されています。</p>
+            <div class="grid-list">
+              <div class="mini-card">待ち時間の確認</div>
+              <div class="mini-card">ショー・レストランの予約</div>
+              <div class="mini-card">マップ確認</div>
+              <div class="mini-card">チケット管理</div>
+            </div>
+            <p>使うのは東京ディズニーリゾート・アプリ。入園後すぐ開けるようにしておくのがコツです。</p>
+          </div>
+          <div class="panel">
+            <div class="kicker">Pass system</div>
+            <h3>③ “ファストパスの代わり”を理解する</h3>
+            <p>以前のファストパスは終了し、現在は別の仕組みに変わっています。ここを理解しているかどうかで、体験の質が大きく変わります。</p>
+            <div class="stack">
+              <div class="mini-card">
+                <div>ディズニー・プレミアアクセス（有料）</div>
+                <small class="section-sub">時間を指定して短い待ち時間で体験。人気アトラクション・ショーが対象で、1回ごとに課金する“現代版ファストパス”です。</small>
+              </div>
+              <div class="mini-card">
+                <div>スタンバイパス（無料・必要な場合あり）</div>
+                <small class="section-sub">指定時間に並ぶための整理券。混雑時に発行され、これがないと並べない場合もあります。</small>
+              </div>
+              <div class="mini-card">
+                <div>エントリー受付（抽選）</div>
+                <small class="section-sub">ショーやキャラグリの抽選。当たれば専用エリアで体験できます。</small>
+              </div>
+            </div>
+            <ul class="bullet-list">
+              <li>有料で確実に楽しむ → プレミアアクセス</li>
+              <li>無料で整理して並ぶ → スタンバイパス</li>
+              <li>運要素 → エントリー受付</li>
+            </ul>
+            <p>入園後すぐアプリでチェックするのが鉄則です。</p>
+          </div>
+          <div class="panel">
+            <div class="kicker">Priority</div>
+            <h3>④ ルートは“なんとなく”でいい、でも優先順位は決める</h3>
+            <p>パークはかなり広いです。全部回ろうとすると、ほぼ確実に疲れます。</p>
+            <ul class="bullet-list">
+              <li>絶対行きたいものを3つ決める</li>
+              <li>それ以外は流れでOK</li>
+            </ul>
+            <p>これだけで“後悔しない1日”になります。</p>
+          </div>
+          <div class="panel">
+            <div class="kicker">Food timing</div>
+            <h3>⑤ 食事は“時間をずらす”が正解</h3>
+            <p>ディズニーシーは食事も魅力のひとつ。ただし、時間を間違えると「並ぶだけ」で終わります。</p>
+            <ul class="bullet-list">
+              <li>11時前 or 14時以降にずらす</li>
+              <li>軽食＋食べ歩きを活用</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <div class="kicker">Show</div>
+            <h3>⑥ ショーは“事前に意識して動く”</h3>
+            <p>夜のショーは特に人気。何も考えずに行くと、いい場所は取れません。</p>
+            <ul class="bullet-list">
+              <li>開始時間を事前チェック</li>
+              <li>エントリー受付 or プレミアアクセスを活用</li>
+            </ul>
+            <p>“見る前提で動く”のが大事です。</p>
+          </div>
+          <div class="panel">
+            <div class="kicker">Energy</div>
+            <h3>⑦ 夜までいるなら“体力配分”を考える</h3>
+            <p>ディズニーシーの本番は夜。でも、昼に疲れてしまう人がかなり多いです。</p>
+            <ul class="bullet-list">
+              <li>午後に1回休憩</li>
+              <li>無理に歩き回らない</li>
+            </ul>
+            <p>夜の景色とショーを最大化するための準備です。</p>
+          </div>
+          <div class="panel">
+            <div class="kicker">Packing</div>
+            <h3>⑧ 持ち物チェック（最低限これ）</h3>
+            <div class="grid-list">
+              <div class="mini-card">モバイルバッテリー（最重要）</div>
+              <div class="mini-card">歩きやすい靴</div>
+              <div class="mini-card">小さめバッグ</div>
+              <div class="mini-card">季節対策（暑さ・寒さ）</div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="kicker">Summary</div>
+            <h3>まとめ</h3>
+            <p>ディズニーシー攻略のカギは、たった3つ。</p>
+            <ul class="bullet-list">
+              <li>朝の動き</li>
+              <li>アプリの使い方</li>
+              <li>パス（仕組み）の理解</li>
+            </ul>
+            <p>これを押さえるだけで、“並ぶだけの1日”が“物語に入り込む1日”へと変わります。</p>
+            <p>準備はシンプルに、体験は贅沢に。</p>
+          </div>
+        `
+      },
+      {
+        key: 'attraction',
+        label: 'アトラクション',
+        menuNote: 'エリア別に見られる一覧',
+        eyebrow: 'Attraction',
+        subtitle: 'テーマポートごとに、世界観とアトラクションを見渡せる一覧ページです。',
+        render: () => `
+          <div class="panel">
+            <div class="kicker">Guide</div>
+            <h3>エリアごとに眺める、東京ディズニーシーのアトラクション</h3>
+            <p>ディズニーシーの魅力は、アトラクションそのものだけでなく、どの世界に足を踏み入れるかという体験設計にあります。</p>
+            <p>ここでは、8つのテーマポートごとにアトラクションを整理しました。回り方を考えるときにも、世界観から選びたいときにも使える一覧です。</p>
+          </div>
+
+          <div class="panel port-section">
+            <div class="port-header">
+              <div class="kicker">Mediterranean Harbor</div>
+              <h3 class="port-name">メディテレーニアンハーバー</h3>
+              <p class="port-note">港町の景色と空・水路の移動体験が印象的な、物語の入口のようなエリア。</p>
+            </div>
+            <div class="ride-list">
+              <div class="ride-card"><div class="ride-meta">2001 / オリジナル（蒸気船の時代） / ライド・移動・周遊</div><div class="ride-title">ディズニーシー・トランジットスチーマーライン</div></div>
+              <div class="ride-card"><div class="ride-meta">2019 / オリジナル（空を飛ぶ夢） / ライド・シアタータイプ</div><div class="ride-title">ソアリン：ファンタスティック・フライト</div></div>
+              <div class="ride-card"><div class="ride-meta">2001 / 大航海時代 / 体験型</div><div class="ride-title">フォートレス・エクスプロレーション</div></div>
+              <div class="ride-card"><div class="ride-meta">2001 / レオナルド・ダ・ヴィンチ / 体験型</div><div class="ride-title">フォートレス・エクスプロレーション“ザ・レオナルドチャレンジ”</div></div>
+              <div class="ride-card"><div class="ride-meta">2001 / イタリア・ヴェネツィア / ライド・移動・周遊</div><div class="ride-title">ヴェネツィアン・ゴンドラ</div></div>
+            </div>
+          </div>
+
+          <div class="panel port-section">
+            <div class="port-header">
+              <div class="kicker">American Waterfront</div>
+              <h3 class="port-name">アメリカンウォーターフロント</h3>
+              <p class="port-note">クラシックな街並みの中に、スリル・ゲーム性・会話型体験が揃う人気エリア。</p>
+            </div>
+            <div class="ride-list">
+              <div class="ride-card"><div class="ride-meta">2006 / オリジナル（呪われたホテル） / ライド</div><div class="ride-title">タワー・オブ・テラー</div></div>
+              <div class="ride-card"><div class="ride-meta">2012 / トイ・ストーリー / ライド</div><div class="ride-title">トイ・ストーリー・マニア！</div></div>
+              <div class="ride-card"><div class="ride-meta">2009 / ファインディング・ニモ / シアタータイプ</div><div class="ride-title">タートル・トーク</div></div>
+              <div class="ride-card"><div class="ride-meta">2001 / 20世紀初頭の都市 / ライド・移動・周遊</div><div class="ride-title">ディズニーシー・エレクトリックレールウェイ</div></div>
+              <div class="ride-card"><div class="ride-meta">2001 / オリジナル（蒸気船） / ライド・移動・周遊</div><div class="ride-title">ディズニーシー・トランジットスチーマーライン</div></div>
+              <div class="ride-card"><div class="ride-meta">2001 / クラシックカー文化 / ライド・移動・周遊</div><div class="ride-title">ビッグシティ・ヴィークル</div></div>
+            </div>
+          </div>
+
+          <div class="panel port-section">
+            <div class="port-header">
+              <div class="kicker">Port Discovery</div>
+              <h3 class="port-name">ポートディスカバリー</h3>
+              <p class="port-note">未来都市らしい軽快さがあり、短時間で回りやすいアトラクションが集まるエリア。</p>
+            </div>
+            <div class="ride-list">
+              <div class="ride-card"><div class="ride-meta">2001 / 未来都市 / ライド</div><div class="ride-title">アクアトピア</div></div>
+              <div class="ride-card"><div class="ride-meta">2001 / 未来交通 / ライド・移動・周遊</div><div class="ride-title">ディズニーシー・エレクトリックレールウェイ</div></div>
+              <div class="ride-card"><div class="ride-meta">2017 / ファインディング・ニモ / ライド</div><div class="ride-title">ニモ＆フレンズ・シーライダー</div></div>
+            </div>
+          </div>
+
+          <div class="panel port-section">
+            <div class="port-header">
+              <div class="kicker">Lost River Delta</div>
+              <h3 class="port-name">ロストリバーデルタ</h3>
+              <p class="port-note">遺跡と探検の空気に満ちた、スリル系を狙うなら外せないエリア。</p>
+            </div>
+            <div class="ride-list">
+              <div class="ride-card"><div class="ride-meta">2001 / インディ・ジョーンズ / ライド</div><div class="ride-title">インディ・ジョーンズ・アドベンチャー：クリスタルスカルの魔宮</div></div>
+              <div class="ride-card"><div class="ride-meta">2001 / オリジナル / ライド・移動・周遊</div><div class="ride-title">ディズニーシー・トランジットスチーマーライン</div></div>
+              <div class="ride-card"><div class="ride-meta">2005 / オリジナル（古代遺跡） / ライド</div><div class="ride-title">レイジングスピリッツ</div></div>
+            </div>
+          </div>
+
+          <div class="panel port-section">
+            <div class="port-header">
+              <div class="kicker">Fantasy Springs</div>
+              <h3 class="port-name">ファンタジースプリングス</h3>
+              <p class="port-note">近年追加された話題エリア。作品世界に深く入り込める最新の没入体験が揃います。</p>
+            </div>
+            <div class="ride-list">
+              <div class="ride-card"><div class="ride-meta">2024 / アナと雪の女王 / ライド</div><div class="ride-title">アナとエルサのフローズンジャーニー</div></div>
+              <div class="ride-card"><div class="ride-meta">2024 / 塔の上のラプンツェル / ライド</div><div class="ride-title">ラプンツェルのランタンフェスティバル</div></div>
+              <div class="ride-card"><div class="ride-meta">2024 / ピーター・パン / ライド</div><div class="ride-title">ピーターパンのネバーランドアドベンチャー</div></div>
+              <div class="ride-card"><div class="ride-meta">2024 / ピーター・パン / ライド</div><div class="ride-title">フェアリー・ティンカーベルのビジーバギー</div></div>
+            </div>
+          </div>
+
+          <div class="panel port-section">
+            <div class="port-header">
+              <div class="kicker">Arabian Coast</div>
+              <h3 class="port-name">アラビアンコースト</h3>
+              <p class="port-note">異国感とやわらかな高揚感がある、物語性の強いアラビアンナイトの世界。</p>
+            </div>
+            <div class="ride-list">
+              <div class="ride-card"><div class="ride-meta">2001 / 千夜一夜物語 / ライド</div><div class="ride-title">シンドバッド・ストーリーブック・ヴォヤッジ</div></div>
+              <div class="ride-card"><div class="ride-meta">2001 / アラジン / シアタータイプ</div><div class="ride-title">マジックランプシアター</div></div>
+              <div class="ride-card"><div class="ride-meta">2001 / アラビアンナイト / ライド</div><div class="ride-title">キャラバンカルーセル</div></div>
+              <div class="ride-card"><div class="ride-meta">2001 / アラジン / ライド</div><div class="ride-title">ジャスミンのフライングカーペット</div></div>
+            </div>
+          </div>
+
+          <div class="panel port-section">
+            <div class="port-header">
+              <div class="kicker">Mermaid Lagoon</div>
+              <h3 class="port-name">マーメイドラグーン</h3>
+              <p class="port-note">明るく幻想的で、やさしい雰囲気のアトラクションがまとまる屋内中心のエリア。</p>
+            </div>
+            <div class="ride-list">
+              <div class="ride-card"><div class="ride-meta">2001 / リトル・マーメイド / 体験型</div><div class="ride-title">アリエルのプレイグラウンド</div></div>
+              <div class="ride-card"><div class="ride-meta">2001 / リトル・マーメイド / ライド</div><div class="ride-title">ジャンピン・ジェリーフィッシュ</div></div>
+              <div class="ride-card"><div class="ride-meta">2001 / リトル・マーメイド / ライド</div><div class="ride-title">スカットルのスクーター</div></div>
+              <div class="ride-card"><div class="ride-meta">2001 / リトル・マーメイド / ライド</div><div class="ride-title">フランダーのフライングフィッシュコースター</div></div>
+              <div class="ride-card"><div class="ride-meta">2001 / リトル・マーメイド / ライド</div><div class="ride-title">ブローフィッシュ・バルーンレース</div></div>
+              <div class="ride-card"><div class="ride-meta">2001 / リトル・マーメイド / シアタータイプ</div><div class="ride-title">マーメイドラグーンシアター</div></div>
+              <div class="ride-card"><div class="ride-meta">2001 / 海の世界 / ライド</div><div class="ride-title">ワールプール</div></div>
+            </div>
+          </div>
+
+          <div class="panel port-section">
+            <div class="port-header">
+              <div class="kicker">Mysterious Island</div>
+              <h3 class="port-name">ミステリアスアイランド</h3>
+              <p class="port-note">火山の内部に広がる、ヴェルヌ的な探検と謎の空気を味わえる濃密なエリア。</p>
+            </div>
+            <div class="ride-list">
+              <div class="ride-card"><div class="ride-meta">2001 / 海底二万里 / ライド</div><div class="ride-title">海底2万マイル</div></div>
+              <div class="ride-card"><div class="ride-meta">2001 / 地底旅行 / ライド</div><div class="ride-title">センター・オブ・ジ・アース</div></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="kicker">Summary</div>
+            <h3>どのエリアから物語に入るかを決めるための一覧</h3>
+            <p>絶対に乗りたいものを決めるときだけでなく、「今日はどんな空気を味わいたいか」から逆算して選べるのが、この一覧の使いどころです。</p>
+            <p>朝の優先順位を決めるときにも、写真を撮りたい世界観から回り方を考えるときにも使えるページに整えています。</p>
+          </div>
+        `
+      },
+      {
+        key: 'food',
+        label: 'フードショップ',
+        menuNote: 'エリアごとに味わう一覧',
+        eyebrow: 'Food Shop',
+        subtitle: '世界観ごとに食の空気も変わる、東京ディズニーシーのフードガイドです。',
+        render: () => `
+          <div class="panel">
+            <div class="kicker">Introduction</div>
+            <p>物語を歩くだけじゃ、もったいない。</p>
+            <p>東京ディズニーシーの魅力は、“食べること”でも完成する。</p>
+            <p>その一口で、世界観はさらに深くなる。その香りで、記憶はより鮮明になる。</p>
+            <p>——さあ、今度は「味」で旅をしよう。</p>
+          </div>
+
+          <div class="panel port-section">
+            <div class="port-header">
+              <div class="kicker">Mediterranean Harbor</div>
+              <h3 class="port-name">メディテレーニアンハーバー</h3>
+              <p class="port-note">“港町で味わう、大人の余裕”</p>
+              <p class="port-note">石畳の街並みに溶け込むレストランたちは、どこか落ち着いた雰囲気。ここでは“ゆっくり食べる”こと自体が贅沢になる。</p>
+            </div>
+            <div class="food-line">
+              <div class="food-card">
+                <div class="food-title">ゴンドリエ・スナック</div>
+                <div class="food-popular">人気：ティラミス風チュロス</div>
+                <p>ほろ苦さと甘さが重なる、大人のチュロス。歩きながら食べるのに、どこか上品。</p>
+              </div>
+              <div class="food-card">
+                <div class="food-title">カフェ・ポルトフィーノ</div>
+                <div class="food-popular">人気：パスタセット</div>
+                <p>港を眺めながら食べる一皿は、それだけで旅の一部になる。</p>
+              </div>
+            </div>
+            <p class="food-reco">最初の一口で、「来てよかった」と思える場所。</p>
+          </div>
+
+          <div class="panel port-section">
+            <div class="port-header">
+              <div class="kicker">American Waterfront</div>
+              <h3 class="port-name">アメリカンウォーターフロント</h3>
+              <p class="port-note">“エンタメとボリュームの街”</p>
+              <p class="port-note">ここは“食べる楽しさ”が一番わかりやすいエリア。ガツンとくる満足感が魅力。</p>
+            </div>
+            <div class="food-line">
+              <div class="food-card">
+                <div class="food-title">ドックサイドダイナー</div>
+                <div class="food-popular">人気：ハンバーガー</div>
+                <p>しっかり食べたいならここ。ジャンク感すら、この街の世界観。</p>
+              </div>
+              <div class="food-card">
+                <div class="food-title">ニューヨーク・デリ</div>
+                <div class="food-popular">人気：ルーベンサンド</div>
+                <p>映画のワンシーンみたいなサンドイッチ。片手で食べて、もう片手で街を感じる。</p>
+              </div>
+            </div>
+            <p class="food-reco">「うまい」と「楽しい」が直結するエリア。</p>
+          </div>
+
+          <div class="panel port-section">
+            <div class="port-header">
+              <div class="kicker">Port Discovery</div>
+              <h3 class="port-name">ポートディスカバリー</h3>
+              <p class="port-note">“未来は、軽くて楽しい”</p>
+              <p class="port-note">ここは軽食がメイン。移動の合間にちょうどいい。</p>
+            </div>
+            <div class="food-line">
+              <div class="food-card">
+                <div class="food-title">ブリーズウェイ・バイツ</div>
+                <div class="food-popular">人気：ポップコーン（フレーバー系）</div>
+                <p>ディズニーといえばこれ。味を変えるだけで、気分も変わる。</p>
+              </div>
+            </div>
+            <p class="food-reco">次のアトラクションへ向かう“エネルギー補給”。</p>
+          </div>
+
+          <div class="panel port-section">
+            <div class="port-header">
+              <div class="kicker">Lost River Delta</div>
+              <h3 class="port-name">ロストリバーデルタ</h3>
+              <p class="port-note">“冒険の合間に、野性味を”</p>
+              <p class="port-note">遺跡とジャングルの中で食べるご飯は、少しワイルド。</p>
+            </div>
+            <div class="food-line">
+              <div class="food-card">
+                <div class="food-title">ユカタン・ベースキャンプ・グリル</div>
+                <div class="food-popular">人気：スモークチキン</div>
+                <p>香ばしさが食欲を刺激する。“冒険してる感”が一気に増す。</p>
+              </div>
+            </div>
+            <p class="food-reco">体力もテンションも回復する場所。</p>
+          </div>
+
+          <div class="panel port-section">
+            <div class="port-header">
+              <div class="kicker">Fantasy Springs</div>
+              <h3 class="port-name">ファンタジースプリングス</h3>
+              <p class="port-note">“物語を、そのまま味わう”</p>
+              <p class="port-note">ここは、もはや“食事”ではなく“体験”。</p>
+            </div>
+            <div class="food-line">
+              <div class="food-card">
+                <div class="food-title">アレンデール・ロイヤルバンケット</div>
+                <div class="food-popular">人気：映画再現プレート</div>
+                <p>アナと雪の女王の世界をそのまま食べる感覚。</p>
+              </div>
+              <div class="food-card">
+                <div class="food-title">スナグリーダックリング</div>
+                <div class="food-popular">人気：ラプンツェルモチーフメニュー</div>
+                <p>塔の上のラプンツェルの酒場を再現。雰囲気だけで満足できるレベル。</p>
+              </div>
+            </div>
+            <p class="food-reco">「食べる＝物語に入る」場所。</p>
+          </div>
+
+          <div class="panel port-section">
+            <div class="port-header">
+              <div class="kicker">Arabian Coast</div>
+              <h3 class="port-name">アラビアンコースト</h3>
+              <p class="port-note">“スパイスと甘さの誘惑”</p>
+              <p class="port-note">香りが違う。空気が違う。一歩入るだけで、異国。</p>
+            </div>
+            <div class="food-line">
+              <div class="food-card">
+                <div class="food-title">カスバ・フードコート</div>
+                <div class="food-popular">人気：カレー</div>
+                <p>スパイスが効いた一皿。パークの中で“ちゃんと美味い”やつ。</p>
+              </div>
+              <div class="food-card">
+                <div class="food-title">サルタンズ・オアシス</div>
+                <div class="food-popular">人気：チュロス</div>
+                <p>定番だけど外せない。このエリアで食べると、少し特別になる。</p>
+              </div>
+            </div>
+            <p class="food-reco">異国の味で、気分をリセット。</p>
+          </div>
+
+          <div class="panel port-section">
+            <div class="port-header">
+              <div class="kicker">Mermaid Lagoon</div>
+              <h3 class="port-name">マーメイドラグーン</h3>
+              <p class="port-note">“かわいいは、正義”</p>
+              <p class="port-note">ここは完全に“ビジュアル勝負”。でも、ちゃんと美味しい。</p>
+            </div>
+            <div class="food-line">
+              <div class="food-card">
+                <div class="food-title">セバスチャンのカリプソキッチン</div>
+                <div class="food-popular">人気：ピザ</div>
+                <p>子ども向けと思いきや、大人も満足。何より空間が楽しい。</p>
+              </div>
+            </div>
+            <p class="food-reco">見て楽しい、食べて楽しい、全部楽しい。</p>
+          </div>
+
+          <div class="panel port-section">
+            <div class="port-header">
+              <div class="kicker">Mysterious Island</div>
+              <h3 class="port-name">ミステリアスアイランド</h3>
+              <p class="port-note">“秘密基地で食べる、特別感”</p>
+              <p class="port-note">火山の中という設定だけで、テンションが上がる。</p>
+            </div>
+            <div class="food-line">
+              <div class="food-card">
+                <div class="food-title">ノーチラスギャレー</div>
+                <div class="food-popular">人気：ギョウザドッグ</div>
+                <p>これを食べずに帰る人はほぼいない。“ディズニーシーの顔”とも言える存在。</p>
+              </div>
+            </div>
+            <p class="food-reco">とりあえずこれ食べとけ、の代表格。</p>
+          </div>
+
+          <div class="panel">
+            <div class="kicker">Summary</div>
+            <h3>フードもまた、東京ディズニーシーの物語の一部</h3>
+            <p>ディズニーシーの食事は、「空腹を満たすもの」じゃない。</p>
+            <p>“その世界を完成させる最後のピース”だ。</p>
+            <p>何を食べるかで、その日の思い出の色が変わる。</p>
+            <p>——さて、次は何を味わう？</p>
+          </div>
+        `
+      },
+      {
+        key: 'photo',
+        label: 'フォトスポット',
+        menuNote: '物語ごとに撮る場所',
+        eyebrow: 'Photo Spot',
+        subtitle: 'エリアごとに、撮るべき場所と空気感をまとめたフォトガイドです。',
+        render: () => `
+          <div class="panel">
+            <div class="kicker">Introduction</div>
+            <p>その一枚は、ただの記録じゃない。</p>
+            <p>それは、“その瞬間にいた証拠”になる。</p>
+            <p>東京ディズニーシーには、思わず立ち止まってしまう場所が、あちこちに散らばっている。</p>
+            <p>ここでは、エリアごとに“撮るべき場所”を、物語として紹介していこう。</p>
+            <p>——カメラの準備はいい？</p>
+          </div>
+
+          <div class="panel port-section">
+            <div class="port-header">
+              <div class="kicker">Mediterranean Harbor</div>
+              <h3 class="port-name">メディテレーニアンハーバー</h3>
+              <p class="port-note">“すべてが絵になる、入口の完成形”</p>
+              <p class="port-note">最初に立つこの場所で、すでに完成している。水面に映る建物、遠くに見える火山、流れる音楽。</p>
+            </div>
+            <div class="spot-line">
+              <div class="spot-card">
+                <div class="spot-title">地球儀（アクアスフィア）前</div>
+                <div class="spot-copy">「来た瞬間」を切り取る王道ショット</div>
+              </div>
+              <div class="spot-card">
+                <div class="spot-title">ハーバー沿い（夜）</div>
+                <div class="spot-copy">水面リフレクションで一気に“作品感”</div>
+              </div>
+              <div class="spot-card">
+                <div class="spot-title">ゴンドラ周辺</div>
+                <div class="spot-copy">ロマンチックな一枚が撮れる</div>
+              </div>
+            </div>
+            <p class="spot-reco">“最初で最高”を撮るならここ。</p>
+          </div>
+
+          <div class="panel port-section">
+            <div class="port-header">
+              <div class="kicker">American Waterfront</div>
+              <h3 class="port-name">アメリカンウォーターフロント</h3>
+              <p class="port-note">“映画の中に入り込む”</p>
+              <p class="port-note">ここは完全に“映画”。どこを切り取っても、ワンシーンになる。</p>
+            </div>
+            <div class="spot-line">
+              <div class="spot-card">
+                <div class="spot-title">タワー・オブ・テラー前</div>
+                <div class="spot-copy">不気味さ×迫力の王道</div>
+              </div>
+              <div class="spot-card">
+                <div class="spot-title">S.S.コロンビア号周辺</div>
+                <div class="spot-copy">夜のライトアップが最強</div>
+              </div>
+              <div class="spot-card">
+                <div class="spot-title">ニューヨークの街並み</div>
+                <div class="spot-copy">スナップでも絵になる</div>
+              </div>
+            </div>
+            <p class="spot-reco">“かっこいい写真”ならここ一択。</p>
+          </div>
+
+          <div class="panel port-section">
+            <div class="port-header">
+              <div class="kicker">Port Discovery</div>
+              <h3 class="port-name">ポートディスカバリー</h3>
+              <p class="port-note">“未来感と遊び心”</p>
+              <p class="port-note">ネオンと水。少しだけ非現実な空気。</p>
+            </div>
+            <div class="spot-line">
+              <div class="spot-card">
+                <div class="spot-title">アクアトピア周辺</div>
+                <div class="spot-copy">水しぶき×光で動きのある写真</div>
+              </div>
+              <div class="spot-card">
+                <div class="spot-title">夜のエリア全体</div>
+                <div class="spot-copy">ネオンで一気に未来感</div>
+              </div>
+            </div>
+            <p class="spot-reco">“遊び心ある一枚”を狙うならここ。</p>
+          </div>
+
+          <div class="panel port-section">
+            <div class="port-header">
+              <div class="kicker">Lost River Delta</div>
+              <h3 class="port-name">ロストリバーデルタ</h3>
+              <p class="port-note">“冒険の空気をそのまま写す”</p>
+              <p class="port-note">湿った空気、遺跡、ジャングル。ここは“探検の記録”が似合う場所。</p>
+            </div>
+            <div class="spot-line">
+              <div class="spot-card">
+                <div class="spot-title">インディ・ジョーンズ前の遺跡</div>
+                <div class="spot-copy">冒険感MAX</div>
+              </div>
+              <div class="spot-card">
+                <div class="spot-title">橋や川沿い</div>
+                <div class="spot-copy">ジャングル感が強い</div>
+              </div>
+            </div>
+            <p class="spot-reco">“旅してる感”を出したいならここ。</p>
+          </div>
+
+          <div class="panel port-section">
+            <div class="port-header">
+              <div class="kicker">Fantasy Springs</div>
+              <h3 class="port-name">ファンタジースプリングス</h3>
+              <p class="port-note">“物語の中、そのもの”</p>
+              <p class="port-note">ここは別格。写真というより、“物語の一部”。</p>
+            </div>
+            <div class="spot-line">
+              <div class="spot-card">
+                <div class="spot-title">ランタンエリア（夜）</div>
+                <div class="spot-copy">光に包まれる幻想的な一枚</div>
+              </div>
+              <div class="spot-card">
+                <div class="spot-title">アレンデール城</div>
+                <div class="spot-copy">映画そのままの世界</div>
+              </div>
+              <div class="spot-card">
+                <div class="spot-title">ネバーランド</div>
+                <div class="spot-copy">冒険の空気をそのまま切り取れる</div>
+              </div>
+            </div>
+            <p class="spot-reco">“映えの頂点”はここ。</p>
+          </div>
+
+          <div class="panel port-section">
+            <div class="port-header">
+              <div class="kicker">Arabian Coast</div>
+              <h3 class="port-name">アラビアンコースト</h3>
+              <p class="port-note">“異国の魔法”</p>
+              <p class="port-note">ランプの光、曲線の建物。一瞬で別の国へ。</p>
+            </div>
+            <div class="spot-line">
+              <div class="spot-card">
+                <div class="spot-title">宮殿前</div>
+                <div class="spot-copy">アラジンの世界そのまま</div>
+              </div>
+              <div class="spot-card">
+                <div class="spot-title">夜のライトアップ</div>
+                <div class="spot-copy">雰囲気が一気に変わる</div>
+              </div>
+            </div>
+            <p class="spot-reco">“異国感”を出すならここ。</p>
+          </div>
+
+          <div class="panel port-section">
+            <div class="port-header">
+              <div class="kicker">Mermaid Lagoon</div>
+              <h3 class="port-name">マーメイドラグーン</h3>
+              <p class="port-note">“かわいいが詰まっている”</p>
+              <p class="port-note">カラフルで幻想的。ここは“かわいいの完成形”。</p>
+            </div>
+            <div class="spot-line">
+              <div class="spot-card">
+                <div class="spot-title">室内エリア全体</div>
+                <div class="spot-copy">どこでも映える</div>
+              </div>
+              <div class="spot-card">
+                <div class="spot-title">アリエル像周辺</div>
+                <div class="spot-copy">世界観ど真ん中</div>
+              </div>
+            </div>
+            <p class="spot-reco">“可愛い写真”ならここ一択。</p>
+          </div>
+
+          <div class="panel port-section">
+            <div class="port-header">
+              <div class="kicker">Mysterious Island</div>
+              <h3 class="port-name">ミステリアスアイランド</h3>
+              <p class="port-note">“異世界の核心”</p>
+              <p class="port-note">煙、岩、火山。ここは“非現実の中心”。</p>
+            </div>
+            <div class="spot-line">
+              <div class="spot-card">
+                <div class="spot-title">プロメテウス火山</div>
+                <div class="spot-copy">圧倒的シンボル</div>
+              </div>
+              <div class="spot-card">
+                <div class="spot-title">夜の火山</div>
+                <div class="spot-copy">迫力が段違い</div>
+              </div>
+            </div>
+            <p class="spot-reco">“ディズニーシー感”を撮るならここ。</p>
+          </div>
+
+          <div class="panel">
+            <div class="kicker">Summary</div>
+            <h3>写真は、場所ではなく物語を切り取るもの</h3>
+            <p>ディズニーシーの写真は、「どこで撮るか」じゃない。</p>
+            <p>“どの物語を切り取るか”だ。</p>
+            <p>同じ場所でも、昼と夜で、角度で、人で、まったく違う表情になる。</p>
+            <p>——さて、どの瞬間を残す？</p>
+          </div>
+        `
+      },
+      {
+        key: 'ttreal',
+        label: 'TTReal',
+        menuNote: '8枠固定の投稿エリア構想',
+        eyebrow: 'TTReal',
+        subtitle: '写真アップ機能を載せる予定の専用ページです。今回は見た目の叩き台だけ先に入れています。',
+        render: () => `
+          <div class="panel">
+            <div class="kicker">TTReal concept</div>
+            <h3>8人分の思い出を残すギャラリー</h3>
+            <p>ここに将来的に、1人1投稿の写真アップ枠を実装する想定です。現時点ではレイアウト確認用のモックです。</p>
+          </div>
+          <div class="tt-grid">
+            ${Array.from({ length: 8 }, (_, i) => `
+              <div class="tt-slot">
+                <div class="tt-num">slot 0${i + 1}</div>
+                <div class="tt-placeholder">photo<br>coming soon</div>
+              </div>
+            `).join('')}
+          </div>
+        `
+      },
+      {
+        key: 'special',
+        label: '伊藤のプチ企画',
+        menuNote: '振り返り企画',
+        eyebrow: 'Special',
+        subtitle: '最後の企画として、自分たちを振り返るための読みものページです。',
+        render: () => `
+          <div class="panel">
+            <div class="kicker">Ito Special</div>
+            <h3>伊藤プチ企画</h3>
+            <p>10日後はもう社会人ですよ。</p>
+            <p>仁井は違うけど。高木も就職できてないかもだけど...気まず。</p>
+            <p>ということで今回、伊藤からの最後の企画。</p>
+            <p>「自分たちを振り返ろうのコーナー」</p>
+          </div>
+
+          <div class="panel">
+            <div class="kicker">Premise</div>
+            <h3>まず前提として</h3>
+            <p>私たちなんやかんや全員気遣いタイプ。</p>
+            <p>だからこそ、「言いたいことあるけどまぁいいか」ってノリを感じます。</p>
+            <p>今回はそこをあえて掘り返す。</p>
+            <p>普段言えない愚痴と、ちゃんとした“いいところ”も含めて。</p>
+          </div>
+
+          <div class="panel">
+            <div class="kicker">Status</div>
+            <h3>なお、回収状況</h3>
+            <ul class="bullet-list">
+              <li>高木 → 連絡つかず（いつも通り）</li>
+              <li>堀口 → めんどくさくて断念</li>
+            </ul>
+            <p>ただ、福田たちから多少回収できたので「そんな感じなんだな〜」くらいで見てほしい。</p>
+          </div>
+
+          <div class="panel">
+            <div class="kicker">Part 01</div>
+            <h3>物申す編</h3>
+            <div class="special-stack">
+              <div class="special-card">
+                <div>病欠ちょっと多くない？<br>未読無視、多すぎ問題<br>寝坊のレベルがもはや睡眠障害<br>集団行動、もうちょい頑張れ</div>
+                <div class="special-arrow">→ これ全部“お前だよ”ってやつ絶対いる</div>
+              </div>
+              <div class="special-card">
+                <div>もっと積極的になってほしい<br>さしだと会話もたんて<br>踏み込んでいいのか毎回悩む</div>
+                <div class="special-arrow">→ 距離感むずい組</div>
+              </div>
+              <div class="special-card">
+                <div>酒癖悪すぎ<br>酔っぱらわないの逆にねどうなん？<br>自分の頼んだつまみ全部食われた</div>
+                <div class="special-arrow">→ うんちもらしてすいません。</div>
+              </div>
+              <div class="special-card">
+                <div>愛想笑い多くなぁい？<br>たまのマジレス怖すぎる</div>
+                <div class="special-arrow">→ こわいよね</div>
+              </div>
+              <div class="special-card">
+                <div>おじさん構文、未だに慣れない<br>お金気にしすぎ vs 気にしなさすぎ</div>
+                <div class="special-arrow">→ どうでもいいと思うけど(著：堀口敏之2026/11/12/8:22『福田への思い』出版：福田)</div>
+              </div>
+              <div class="special-card">
+                <div>筋肉枠ねらってんじゃねーよ（しかもモテない）<br>見てくれだけで中身空っぽ</div>
+                <div class="special-arrow">→ 仁井の同期からです。</div>
+              </div>
+              <div class="special-card">
+                <div>くら寿司の無限緑茶まじ死ね</div>
+                <div class="special-arrow">→ それな</div>
+              </div>
+            </div>
+            <p>心当たりある方は反省してください。</p>
+          </div>
+
+          <div class="panel">
+            <div class="kicker">Part 02</div>
+            <h3>ツンデレとこ編</h3>
+            <div class="special-stack">
+              <div class="special-card special-soft">
+                <div>かわいいしスペック高いし最高かよ<br>いるだけで場が盛り上がる<br>なんやかんや付き合い良すぎ</div>
+                <div class="special-arrow">→ 告白しんど</div>
+              </div>
+              <div class="special-card special-soft">
+                <div>なんやかんやなんとかしてくれる<br>話の引き出しが多い<br>いつも明るい</div>
+                <div class="special-arrow">→ まぶしくてごめんて</div>
+              </div>
+              <div class="special-card special-soft">
+                <div>気遣いの質がバグってる<br>ちゃんと話すとめっちゃいいやつ</div>
+                <div class="special-arrow">→ 在学中は女子怖かったよね</div>
+              </div>
+              <div class="special-card special-soft">
+                <div>ごはん奢ってくれる<br>見た目アレなのにスペック高すぎる</div>
+                <div class="special-arrow">→ ごちそうさまです</div>
+              </div>
+              <div class="special-card special-soft">
+                <div>お前はずっと競馬してていい</div>
+                <div class="special-arrow">→ 就職がんばれよ</div>
+              </div>
+            </div>
+          </div>
+          </div>
+          </div>
+
+          <div class="quote-panel">
+            <div class="quote-mark">“</div>
+            <p>みんなのおかげで高校生活が楽しかった</p>
+          </div>
+
+          <div class="panel">
+            <div class="kicker">Summary</div>
+            <h3>まとめ</h3>
+            <p>こちらの企画は正直、酔っぱらった伊藤がみんなから愚痴聞きたいとおもってはじめたやつです。</p>
+            <p>正直しらふに戻って後悔しました。でもがんばりました。ほめてください。</p>
+            <p>——ようこそ社会の歯車へ。高木と仁井は違うけど...気まず。</p>
+          </div>
+        `
+      },
+      {
+        key: 'ending',
+        label: '最後に',
+        menuNote: '締めのページ',
+        eyebrow: 'Closing',
+        subtitle: 'この一日を、記憶として持ち帰るための最後のページです。',
+        render: () => `
+          <div class="panel">
+            <div class="kicker">Closing</div>
+            <h3>総括｜その一日は、きっと“記憶”になる</h3>
+            <p>東京ディズニーシーは、ただのテーマパークじゃない。</p>
+            <p>それは、“どの物語を生きるかを選ぶ場所”だ。</p>
+          </div>
+
+          <div class="panel">
+            <div class="kicker">Day Begins</div>
+            <p>朝、ゲートをくぐった瞬間から始まる非日常。</p>
+            <p>空を飛び、深海に潜り、誰かの物語に入り込み、気づけば、現実のことなんて少しだけ遠くなる。</p>
+          </div>
+
+          <div class="panel">
+            <div class="kicker">Who You Came With</div>
+            <h3>この場所の本当の価値は、「誰と来たか」で変わる</h3>
+            <p>友達と笑いながら歩いた道も、恋人と見上げた夜景も、一人で感じた静かな時間も。</p>
+            <p>同じ場所でも、まったく違う“記憶”になる。</p>
+          </div>
+
+          <div class="panel">
+            <div class="kicker">Memory</div>
+            <p>アトラクションも、食事も、景色も。そのすべては、ただの“きっかけ”でしかない。</p>
+            <p>本当に残るのは、その日、その瞬間、その空気。</p>
+          </div>
+
+          <div class="panel">
+            <div class="kicker">余白</div>
+            <p>だから、全部回らなくていい。完璧じゃなくていい。</p>
+            <p>むしろ少し足りないくらいがいい。</p>
+            <p>「また来たい」と思える余白が、この場所には必要だから。</p>
+          </div>
+
+          <div class="quote-panel">
+            <div class="quote-mark">“</div>
+            <p>物語は、一日で終わらない。</p>
+            <p>また訪れるたびに、違う顔を見せてくれる。</p>
+            <p>さあ、次はどの物語へ？</p>
+          </div>
+        `
+      }
+    ];
+
+    const screens = [...document.querySelectorAll('.screen')];
+    const historyStack = ['screen-title'];
+    let currentScreen = 'screen-title';
+    let currentItemIndex = 0;
+
+    const itemEyebrow = document.getElementById('item-eyebrow');
+    const itemTitle = document.getElementById('item-title');
+    const itemSubtitle = document.getElementById('item-subtitle');
+    const itemContent = document.getElementById('item-content');
+    const menuList = document.getElementById('menu-list');
+
+    function placeholderBlock(title, text) {
+      return `
+        <div class="panel">
+          <div class="kicker">Preview</div>
+          <h3>${title}</h3>
+          <p>${text}</p>
+        </div>
+        <div class="panel">
+          <div class="kicker">Memo</div>
+          <p>このページはまだ骨組み段階です。本文、写真、リンクを後から差し込めるように余白を残しています。</p>
+        </div>
+      `;
+    }
+
+    function buildMenu() {
+      menuList.innerHTML = itemOrder.map(item => `
+        <button class="list-btn" data-item="${item.key}">${item.label}<small>${item.menuNote}</small></button>
+      `).join('');
+    }
+
+    function getActiveScreen() {
+      return document.querySelector('.screen.active');
+    }
+
+    function resetActiveScroll() {
+      const active = getActiveScreen();
+      if (active) active.scrollTop = 0;
+    }
+
+    function showScreen(id, pushHistory = true) {
+      if (id === currentScreen) return;
+      screens.forEach(screen => screen.classList.toggle('active', screen.id === id));
+      if (pushHistory) historyStack.push(id);
+      currentScreen = id;
+      resetActiveScroll();
+    }
+
+    function goBack() {
+      if (historyStack.length <= 1) {
+        showScreen('screen-title', false);
+        return;
+      }
+      historyStack.pop();
+      const prev = historyStack[historyStack.length - 1];
+      screens.forEach(screen => screen.classList.toggle('active', screen.id === prev));
+      currentScreen = prev;
+      resetActiveScroll();
+    }
+
+    function openItemByKey(key) {
+      const index = itemOrder.findIndex(item => item.key === key);
+      currentItemIndex = index >= 0 ? index : 0;
+      renderItem();
+      showScreen('screen-item');
+    }
+
+    function renderItem() {
+      const item = itemOrder[currentItemIndex];
+      itemEyebrow.textContent = item.eyebrow;
+      itemTitle.textContent = item.label;
+      itemSubtitle.textContent = item.subtitle;
+      itemContent.innerHTML = item.render();
+    }
+
+    function handleInteraction(event) {
+      const target = event.target.closest('button, [data-go], [data-item], [data-back], [data-home], [data-font]');
+      if (!target) return;
+
+      const goTarget = target.closest('[data-go]');
+      const itemTarget = target.closest('[data-item]');
+      const backTarget = target.closest('[data-back]');
+      const homeTarget = target.closest('[data-home]');
+      const fontTarget = target.closest('[data-font]');
+
+      if (goTarget) {
+        showScreen(goTarget.dataset.go);
+        return;
+      }
+      if (itemTarget) {
+        openItemByKey(itemTarget.dataset.item);
+        return;
+      }
+      if (backTarget) {
+        goBack();
+        return;
+      }
+      if (homeTarget) {
+        historyStack.length = 0;
+        historyStack.push('screen-title');
+        showScreen('screen-title', false);
+        return;
+      }
+      if (fontTarget) {
+        document.documentElement.style.setProperty('--font-scale', fontTarget.dataset.font);
+        document.querySelectorAll('[data-font]').forEach(btn => btn.classList.remove('selected'));
+        fontTarget.classList.add('selected');
+      }
+    }
+
+    function prevItem() {
+      currentItemIndex = (currentItemIndex - 1 + itemOrder.length) % itemOrder.length;
+      renderItem();
+    }
+
+    function nextItem() {
+      currentItemIndex = (currentItemIndex + 1) % itemOrder.length;
+      renderItem();
+    }
+
+    buildMenu();
+
+    document.addEventListener('click', handleInteraction, { passive: true });
+    document.addEventListener('touchend', handleInteraction, { passive: true });
+    document.getElementById('prev-item').addEventListener('click', prevItem);
+    document.getElementById('next-item').addEventListener('click', nextItem);
+    document.getElementById('prev-item').addEventListener('touchend', prevItem, { passive: true });
+    document.getElementById('next-item').addEventListener('touchend', nextItem, { passive: true });
+  </script>
+</body>
+</html>
