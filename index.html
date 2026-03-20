@@ -352,8 +352,6 @@
 
 
 
-
-
     .special-stack {
       display: grid;
       gap: 10px;
@@ -609,17 +607,14 @@
             <div class="eyebrow">Tokyo DisneySea Planner</div>
             <div class="title-mark">✦</div>
             <h1>DisneySea<br>The Last Ride<br>– Table Tennis Club –<br>March 21, 2026</h1>
-            <p class="subtitle">
-              おしゃれなスマホ用しおりの叩き台です。<br>
-              タイトルから各項目までの流れと、全体の雰囲気を確認できます。
-            </p>
+            <p class="subtitle">文杉卓球部22卒の集い(一名部外者)</p>
             <div class="stack">
               <button class="primary-btn" data-go="screen-menu">メニュー</button>
               <button class="secondary-btn" data-go="screen-option">オプション</button>
               <button class="secondary-btn" data-go="screen-credit">クレジット</button>
             </div>
           </div>
-          <p class="footer-note">白と赤を基調に、背景は固定・情報レイヤーだけがスクロールする構成です</p>
+          <p class="footer-note">Ⓒ 文杉卓球部22卒の集い/仁井航大</p>
         </div>
       </section>
 
@@ -1458,7 +1453,7 @@
         render: () => `
           <div class="panel">
             <div class="kicker">Ito Special</div>
-            <h3>伊藤プチ企画</h3>
+            <h3>導入</h3>
             <p>10日後はもう社会人ですよ。</p>
             <p>仁井は違うけど。高木も就職できてないかもだけど...気まず。</p>
             <p>ということで今回、伊藤からの最後の企画。</p>
@@ -1613,6 +1608,28 @@
       }
     ];
 
+    let pointerStart = null;
+
+    function bindSafeTap(element, handler) {
+      if (!element) return;
+      element.addEventListener('pointerdown', (e) => {
+        pointerStart = { x: e.clientX, y: e.clientY, id: e.pointerId };
+      }, { passive: true });
+
+      element.addEventListener('pointerup', (e) => {
+        if (!pointerStart || pointerStart.id !== e.pointerId) return;
+        const dx = Math.abs(e.clientX - pointerStart.x);
+        const dy = Math.abs(e.clientY - pointerStart.y);
+        pointerStart = null;
+        if (dx > 10 || dy > 10) return;
+        handler(e);
+      });
+
+      element.addEventListener('pointercancel', () => {
+        pointerStart = null;
+      });
+    }
+
     const screens = [...document.querySelectorAll('.screen')];
     const historyStack = ['screen-title'];
     let currentScreen = 'screen-title';
@@ -1623,6 +1640,7 @@
     const itemSubtitle = document.getElementById('item-subtitle');
     const itemContent = document.getElementById('item-content');
     const menuList = document.getElementById('menu-list');
+    let menuPointerStart = null;
 
     function placeholderBlock(title, text) {
       return `
@@ -1736,11 +1754,11 @@
     buildMenu();
 
     document.addEventListener('click', handleInteraction, { passive: true });
-    document.addEventListener('touchend', handleInteraction, { passive: true });
+    document.addEventListener(handleInteraction, { passive: true });
     document.getElementById('prev-item').addEventListener('click', prevItem);
     document.getElementById('next-item').addEventListener('click', nextItem);
-    document.getElementById('prev-item').addEventListener('touchend', prevItem, { passive: true });
-    document.getElementById('next-item').addEventListener('touchend', nextItem, { passive: true });
+    document.getElementById('prev-item').addEventListener(prevItem, { passive: true });
+    document.getElementById('next-item').addEventListener(nextItem, { passive: true });
   </script>
 </body>
 </html>
