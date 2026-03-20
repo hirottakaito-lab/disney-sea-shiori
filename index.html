@@ -531,7 +531,157 @@
       line-height: 1.55;
     }
 
+
+    .ttreal-wrap {
+      display: grid;
+      gap: 14px;
+    }
+
+    .tt-status {
+      color: var(--sub);
+      font-size: 0.92rem;
+      line-height: 1.75;
+    }
+
+    .tt-status.ok {
+      color: var(--accent-deep);
+    }
+
+    .tt-status.error {
+      color: #8a5a5a;
+    }
+
     .tt-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .tt-slot {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.99), rgba(246,239,231,0.96));
+    }
+
+    .tt-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .tt-name {
+      font-size: 1rem;
+      line-height: 1.45;
+      color: var(--text);
+    }
+
+    .tt-tag {
+      color: var(--accent-deep);
+      border: 1px solid var(--line);
+      background: var(--accent-soft-2);
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    .tt-photo {
+      aspect-ratio: 1 / 1.06;
+      border-radius: 14px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.96);
+      border: 1px solid var(--line);
+      display: grid;
+      place-items: center;
+    }
+
+    .tt-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .tt-placeholder {
+      text-align: center;
+      color: var(--sub);
+      font-size: 0.88rem;
+      line-height: 1.7;
+      padding: 14px;
+    }
+
+    .tt-meta {
+      color: var(--sub);
+      font-size: 0.82rem;
+      line-height: 1.7;
+    }
+
+    .tt-note {
+      width: 100%;
+      min-height: 76px;
+      resize: vertical;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.97);
+      color: var(--text);
+      font: inherit;
+      line-height: 1.65;
+      padding: 10px 12px;
+    }
+
+    .tt-note::placeholder {
+      color: #a38d7d;
+    }
+
+    .tt-actions {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 8px;
+    }
+
+    .tt-upload {
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .tt-upload input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .tt-save,
+    .tt-clear {
+      min-width: 62px;
+      text-align: center;
+    }
+
+    .tt-setup {
+      color: var(--sub);
+      font-size: 0.9rem;
+      line-height: 1.8;
+    }
+
+    @media (max-width: 380px) {
+      .tt-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .tt-actions {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .tt-upload {
+        grid-column: 1 / -1;
+      }
+    }
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
@@ -606,8 +756,8 @@
           <div class="title-hero">
             <div class="eyebrow">Tokyo DisneySea Planner</div>
             <div class="title-mark">✦</div>
-            <h1>DisneySeaItinerary</h1>
-            <p class="subtitle">The Last Ride<br>– Table Tennis Club –<br>March 21, 2026</p>
+            <h1>DisneySea<br>The Last Ride<br>– Table Tennis Club –<br>March 21, 2026</h1>
+            <p class="subtitle">文杉卓球部22卒の集い(一名部外者)</p>
             <div class="stack">
               <button class="primary-btn" data-go="screen-menu">メニュー</button>
               <button class="secondary-btn" data-go="screen-option">オプション</button>
@@ -627,7 +777,7 @@
           </div>
           <div class="panel">
             <h2 class="section-title">メニュー</h2>
-            <p class="section-sub">頑張って作ったから見て行ってちょ。時間の関係で写真などは入っておりません。ご容赦ください。</p>
+            <p class="section-sub">現時点の構成をそのまま並べた目次です。細かい命名や本文は後から差し替えできます。</p>
           </div>
           <div class="item-list" id="menu-list"></div>
         </div>
@@ -679,7 +829,7 @@
             </div>
             <div class="credit-item">
               <div>幹事</div>
-              <small class="section-sub">仁井航大</small>
+              <small class="section-sub">仁井康太</small>
             </div>
             <div class="credit-item">
               <div>スペシャルサンクス</div>
@@ -1425,22 +1575,53 @@
       {
         key: 'ttreal',
         label: 'TTReal',
-        menuNote: '8枠固定の投稿エリア構想',
+        menuNote: '共有フォトボード',
         eyebrow: 'TTReal',
-        subtitle: '写真アップ機能を載せる予定の専用ページです。今回は見た目の叩き台だけ先に入れています。',
+        subtitle: '8人分の写真とひとことを、みんなで共有できるページです。',
         render: () => `
-          <div class="panel">
-            <div class="kicker">TTReal concept</div>
-            <h3>8人分の思い出を残すギャラリー</h3>
-            <p>ここに将来的に、1人1投稿の写真アップ枠を実装する想定です。現時点ではレイアウト確認用のモックです。</p>
-          </div>
-          <div class="tt-grid">
-            ${Array.from({ length: 8 }, (_, i) => `
-              <div class="tt-slot">
-                <div class="tt-num">slot 0${i + 1}</div>
-                <div class="tt-placeholder">photo<br>coming soon</div>
-              </div>
-            `).join('')}
+          <div class="ttreal-wrap">
+            <div class="panel">
+              <div class="kicker">TTReal</div>
+              <h3>共有フォトボード</h3>
+              <p>枠ごとに名前を決めて、誰がどこに上げるか分かる形にしています。写真1枚とひとことを保存すると、他の端末にも反映されます。</p>
+              <p class="tt-setup">はじめて使う前に、Firebase の Web 設定値をこのHTML内に入れてください。設定前は下のステータスに案内が出ます。</p>
+            </div>
+            <div class="panel">
+              <div class="kicker">Status</div>
+              <p class="tt-status" id="ttreal-status">TTReal を初期化しています…</p>
+            </div>
+            <div class="tt-grid" id="ttreal-grid">
+              ${[
+                'ひろたか',
+                'そーへー',
+                'けんと',
+                'としゆき',
+                'こうた',
+                'のぞみ',
+                'ちあき',
+                '全体'
+              ].map((name, i) => `
+                <div class="tt-slot" data-tt-slot="${i}">
+                  <div class="tt-head">
+                    <div class="tt-name">${name}</div>
+                    <div class="tt-tag">slot 0${i + 1}</div>
+                  </div>
+                  <div class="tt-photo" id="ttreal-photo-${i}">
+                    <div class="tt-placeholder">photo<br>shared board</div>
+                  </div>
+                  <div class="tt-meta" id="ttreal-meta-${i}">まだ投稿されていません</div>
+                  <textarea class="tt-note" data-tt-note="${i}" placeholder="ひとことメモ"></textarea>
+                  <div class="tt-actions">
+                    <label class="secondary-btn tt-upload">
+                      写真を追加
+                      <input type="file" accept="image/*" data-tt-file="${i}">
+                    </label>
+                    <button class="secondary-btn tt-save" data-tt-save="${i}">保存</button>
+                    <button class="secondary-btn tt-clear" data-tt-clear="${i}">削除</button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
           </div>
         `
       },
@@ -1453,7 +1634,7 @@
         render: () => `
           <div class="panel">
             <div class="kicker">Ito Special</div>
-            <h3>導入</h3>
+            <h3>伊藤プチ企画</h3>
             <p>10日後はもう社会人ですよ。</p>
             <p>仁井は違うけど。高木も就職できてないかもだけど...気まず。</p>
             <p>ということで今回、伊藤からの最後の企画。</p>
@@ -1704,6 +1885,10 @@
       itemTitle.textContent = item.label;
       itemSubtitle.textContent = item.subtitle;
       itemContent.innerHTML = item.render();
+
+      if (item.key === 'ttreal' && window.TTRealShared && typeof window.TTRealShared.mount === 'function') {
+        window.TTRealShared.mount();
+      }
     }
 
     function handleInteraction(event) {
@@ -1760,5 +1945,249 @@
     document.getElementById('prev-item').addEventListener(prevItem, { passive: true });
     document.getElementById('next-item').addEventListener(nextItem, { passive: true });
   </script>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js';
+    import { getFirestore, collection, doc, setDoc, onSnapshot, serverTimestamp, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js';
+    import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-storage.js';
+
+    const FIREBASE_CONFIG = {
+      apiKey: 'PASTE_API_KEY',
+      authDomain: 'PASTE_AUTH_DOMAIN',
+      projectId: 'PASTE_PROJECT_ID',
+      storageBucket: 'PASTE_STORAGE_BUCKET',
+      messagingSenderId: 'PASTE_MESSAGING_SENDER_ID',
+      appId: 'PASTE_APP_ID'
+    };
+
+    const SLOT_NAMES = ['ひろたか', 'そーへー', 'けんと', 'としゆき', 'こうた', 'のぞみ', 'ちあき', '全体'];
+    const SLOT_IDS = SLOT_NAMES.map((_, index) => `slot${index + 1}`);
+    const MAX_EDGE = 1600;
+
+    let ttApp = null;
+    let ttDb = null;
+    let ttStorage = null;
+    let ttUnsubscribe = null;
+    let ttMounted = false;
+    let ttState = SLOT_IDS.map((id, index) => ({
+      id,
+      name: SLOT_NAMES[index],
+      note: '',
+      imageUrl: '',
+      updatedAtText: ''
+    }));
+
+    function firebaseReady() {
+      return Object.values(FIREBASE_CONFIG).every(value => value && !String(value).startsWith('PASTE_'));
+    }
+
+    function setStatus(message, type = '') {
+      const el = document.getElementById('ttreal-status');
+      if (!el) return;
+      el.textContent = message;
+      el.className = `tt-status ${type}`.trim();
+    }
+
+    function formatNow() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const h = String(d.getHours()).padStart(2, '0');
+      const min = String(d.getMinutes()).padStart(2, '0');
+      return `${y}.${m}.${day} ${h}:${min}`;
+    }
+
+    async function compressImage(file) {
+      const bitmap = await createImageBitmap(file);
+      const scale = Math.min(1, MAX_EDGE / Math.max(bitmap.width, bitmap.height));
+      const width = Math.round(bitmap.width * scale);
+      const height = Math.round(bitmap.height * scale);
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(bitmap, 0, 0, width, height);
+
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.86));
+      return blob;
+    }
+
+    function renderTTReal() {
+      ttState.forEach((slot, index) => {
+        const photoEl = document.getElementById(`ttreal-photo-${index}`);
+        const noteEl = document.querySelector(`[data-tt-note="${index}"]`);
+        const metaEl = document.getElementById(`ttreal-meta-${index}`);
+
+        if (noteEl && noteEl !== document.activeElement) {
+          noteEl.value = slot.note || '';
+        }
+
+        if (metaEl) {
+          metaEl.textContent = slot.updatedAtText ? `最終更新: ${slot.updatedAtText}` : 'まだ投稿されていません';
+        }
+
+        if (!photoEl) return;
+
+        if (slot.imageUrl) {
+          photoEl.innerHTML = `<img src="${slot.imageUrl}" alt="${slot.name} の写真">`;
+        } else {
+          photoEl.innerHTML = '<div class="tt-placeholder">photo<br>shared board</div>';
+        }
+      });
+    }
+
+    async function ensureFirebase() {
+      if (!firebaseReady()) {
+        setStatus('Firebase 未設定です。HTML内の FIREBASE_CONFIG を入れてください。', 'error');
+        return false;
+      }
+
+      if (!ttApp) {
+        ttApp = initializeApp(FIREBASE_CONFIG);
+        ttDb = getFirestore(ttApp);
+        ttStorage = getStorage(ttApp);
+      }
+
+      return true;
+    }
+
+    async function startRealtime() {
+      if (!(await ensureFirebase())) return;
+
+      if (ttUnsubscribe) {
+        ttUnsubscribe();
+        ttUnsubscribe = null;
+      }
+
+      ttUnsubscribe = onSnapshot(collection(ttDb, 'ttrealSlots'), (snapshot) => {
+        const nextState = SLOT_IDS.map((id, index) => ({
+          id,
+          name: SLOT_NAMES[index],
+          note: '',
+          imageUrl: '',
+          updatedAtText: ''
+        }));
+
+        snapshot.forEach((snap) => {
+          const index = SLOT_IDS.indexOf(snap.id);
+          if (index === -1) return;
+          const data = snap.data();
+          nextState[index] = {
+            id: snap.id,
+            name: SLOT_NAMES[index],
+            note: data.note || '',
+            imageUrl: data.imageUrl || '',
+            updatedAtText: data.updatedAtText || ''
+          };
+        });
+
+        ttState = nextState;
+        renderTTReal();
+        setStatus('共有ボードに接続しました。保存すると他の端末にも反映されます。', 'ok');
+      }, (error) => {
+        console.error(error);
+        setStatus('Firestore への接続でエラーが出ました。Firebase 設定かルールを確認してください。', 'error');
+      });
+    }
+
+    async function saveSlot(index) {
+      if (!(await ensureFirebase())) return;
+      const noteEl = document.querySelector(`[data-tt-note="${index}"]`);
+      const note = noteEl ? noteEl.value.trim() : '';
+      const slotId = SLOT_IDS[index];
+
+      setStatus(`${SLOT_NAMES[index]} のメモを保存しています…`);
+      await setDoc(doc(ttDb, 'ttrealSlots', slotId), {
+        name: SLOT_NAMES[index],
+        note,
+        imageUrl: ttState[index]?.imageUrl || '',
+        updatedAtText: formatNow(),
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+      setStatus(`${SLOT_NAMES[index]} を保存しました。`, 'ok');
+    }
+
+    async function uploadSlotImage(index, file) {
+      if (!(await ensureFirebase())) return;
+      if (!file) return;
+
+      setStatus(`${SLOT_NAMES[index]} の写真をアップロードしています…`);
+      const slotId = SLOT_IDS[index];
+      const imageRef = ref(ttStorage, `ttreal/${slotId}.jpg`);
+      const compressed = await compressImage(file);
+      await uploadBytes(imageRef, compressed, { contentType: 'image/jpeg' });
+      const imageUrl = await getDownloadURL(imageRef);
+
+      await setDoc(doc(ttDb, 'ttrealSlots', slotId), {
+        name: SLOT_NAMES[index],
+        imageUrl,
+        note: ttState[index]?.note || '',
+        updatedAtText: formatNow(),
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+
+      setStatus(`${SLOT_NAMES[index]} の写真を更新しました。`, 'ok');
+    }
+
+    async function clearSlot(index) {
+      if (!(await ensureFirebase())) return;
+      const slotId = SLOT_IDS[index];
+      setStatus(`${SLOT_NAMES[index]} を削除しています…`);
+
+      try {
+        await deleteObject(ref(ttStorage, `ttreal/${slotId}.jpg`));
+      } catch (error) {
+        console.log('storage delete skip', error?.code || error);
+      }
+
+      await setDoc(doc(ttDb, 'ttrealSlots', slotId), {
+        name: SLOT_NAMES[index],
+        imageUrl: '',
+        note: '',
+        updatedAtText: formatNow(),
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+
+      setStatus(`${SLOT_NAMES[index]} を削除しました。`, 'ok');
+    }
+
+    function bindActions() {
+      document.querySelectorAll('[data-tt-save]').forEach((button) => {
+        if (button.dataset.bound === '1') return;
+        button.dataset.bound = '1';
+        button.addEventListener('click', () => {
+          saveSlot(Number(button.dataset.ttSave));
+        });
+      });
+
+      document.querySelectorAll('[data-tt-clear]').forEach((button) => {
+        if (button.dataset.bound === '1') return;
+        button.dataset.bound = '1';
+        button.addEventListener('click', () => {
+          clearSlot(Number(button.dataset.ttClear));
+        });
+      });
+
+      document.querySelectorAll('[data-tt-file]').forEach((input) => {
+        if (input.dataset.bound === '1') return;
+        input.dataset.bound = '1';
+        input.addEventListener('change', (event) => {
+          const file = event.target.files && event.target.files[0];
+          uploadSlotImage(Number(input.dataset.ttFile), file);
+          event.target.value = '';
+        });
+      });
+    }
+
+    window.TTRealShared = {
+      async mount() {
+        bindActions();
+        renderTTReal();
+        await startRealtime();
+      }
+    };
+  </script>
+
 </body>
 </html>
